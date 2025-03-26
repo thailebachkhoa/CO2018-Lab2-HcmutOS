@@ -1,0 +1,189 @@
+# CO2018 - Lab 2 - HCMUT 2025
+
+## Problem 1: Overview
+
+The program `problem1.c` processes movie rating data from two input files (`movie-100k_1.txt` and `movie-100k_2.txt`) to compute the average rating for each movie. It employs shared memory for inter-process communication and uses two child processes to handle the files concurrently.
+
+### Input File Format
+
+Each input file contains movie ratings in the following format:
+
+```
+userID <tab> movieID <tab> rating <tab> timeStamp
+```
+
+- **userID**: The ID of the user who rated the movie.
+- **movieID**: The ID of the movie.
+- **rating**: The rating given by the user (typically between 1-5).
+- **timeStamp**: The timestamp of the rating.
+
+#### Example
+
+```
+1    50    5    881250949
+2    172   4    891717742
+3    133   3    878887116
+```
+
+### Program Workflow
+
+1. A shared memory segment is created to store the count and sum of ratings for each movie.
+2. Two child processes are forked:
+    - The first child processes `movie-100k_1.txt`.
+    - The second child processes `movie-100k_2.txt`.
+3. Each child updates the shared memory with the number of ratings and the total sum of ratings for each movie.
+4. The parent process waits for both children to complete.
+5. The parent computes the average rating for each movie and outputs the results.
+6. The shared memory is detached and removed.
+
+### Compilation and Execution
+
+#### Compilation
+
+Run the following command to compile the program:
+
+```bash
+make all
+```
+
+#### Execution
+
+Execute the program using:
+
+```bash
+./movie_rating
+```
+
+### Output Format
+
+The program outputs the average rating for each movie in the following format:
+
+```
+MovieID    Average Rating
+1          4.5
+2          3.8
+...
+```
+
+### Notes
+
+- Ensure that `movie-100k_1.txt` and `movie-100k_2.txt` are in the same directory as the executable.
+- The program supports up to 1682 movies (`MAX_MOVIES`).
+
+---
+
+## Problem 2: Overview
+
+This section involves implementing two programs to compute the sum of integers from 1 to `n` using both serial and multi-threaded approaches.
+
+### Compilation and Execution
+
+Use `make` to compile the programs and execute them as follows:
+
+- **Serial Program**:
+
+```bash
+./sum_serial <n>
+```
+
+- **Multi-threaded Program**:
+
+```bash
+./sum_multithread <numThreads> <n>
+```
+
+---
+
+### Problem 2.1: Multi-threading Approach
+
+The multi-threaded program takes two arguments: `numThreads` and `n`.
+
+1. **Thread Creation**  
+    - Creates `numThreads` threads, each responsible for a portion of the sum.
+
+2. **Range Division**  
+    - Divides the range of numbers among the threads.
+
+3. **Partial Sum Calculation**  
+    - Each thread computes its partial sum and stores it in a shared structure.
+
+4. **Aggregation**  
+    - The main thread aggregates the partial sums after all threads complete.
+
+5. **Output**  
+    - The final sum is displayed.
+
+---
+
+### Problem 2.2: Serial Approach
+
+The serial program calculates the sum of integers from 1 to `n` using a simple loop.
+
+1. **Input Handling**  
+    - Expects a single argument (`n`).
+    - Prints an error message and exits if the input is invalid.
+
+2. **Sum Calculation**  
+    - Uses a loop to compute the sum:
+
+      ```c
+      Sum = 1 + 2 + 3 + ... + n
+      ```
+
+3. **Output**  
+    - Displays the computed sum.
+
+4. **Exit Code**  
+    - Returns 0 on successful execution.
+
+---
+
+## Problem 4: Overview
+
+This program demonstrates inter-process communication using memory-mapped files (`mmap`). It maps a file into memory, allowing parent and child processes to share data efficiently.
+
+### Key Features
+
+- Uses `mmap()` to map a file into memory.
+- Facilitates communication between parent and child processes.
+- Demonstrates shared memory usage without explicit message-passing.
+
+### Compilation and Execution
+
+#### Compilation
+
+Run the following command to compile:
+
+```bash
+make all
+```
+
+#### Execution
+
+- To write data to shared memory:
+
+```bash
+./writer
+```
+
+- To read data from shared memory:
+
+```bash
+./reader
+```
+
+### Program Workflow
+
+1. **File Creation and Mapping**  
+    - A file is created and mapped into the process's address space using `mmap()`.
+
+2. **Process Forking**  
+    - A child process is created using `fork()`.
+
+3. **Data Sharing**  
+    - The parent writes data to the mapped memory.
+    - The child reads the data and prints it.
+
+4. **Cleanup**  
+    - The memory is unmapped using `munmap()`.
+    - The file is deleted after execution.
